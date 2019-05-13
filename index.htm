@@ -42,20 +42,30 @@
                 bottom: 0px;
                 border: 15px solid #444444;
             }
+            .button{
+                background: grey;
+                margin: 5px 0px;
+                padding: 2px 5px;
+                cursor: pointer;
+            }
         </style>
         <script src="./main.js" type="module"></script>
     </head>
     <body>
         <div id="info">
             <div>
+                FPS : <span id="FPS">---</span>
+            </div>
+            <div>
                 Coords : <span id="lemCoords">---</span>
             </div>
             <div>
                 Map : <span id="mapData">---</span>
             </div>
-            <div onclick="Engine.toggle()">Pause/Resume</div>
-            <div onclick="Engine.tick()">Next Tick</div>
-
+            <div class="button" onclick="Engine.toggle()">Pause/Resume</div>
+            <div class="button" onclick="Engine.tick()">Next Tick</div>
+            <div class="button" onclick="window.action='draw'">Draw</div>
+            <div class="button" onclick="window.action='erase'">Erase</div>
         </div>
         <div id="container">
             <canvas id="map" width="1087" height="319" ></canvas>

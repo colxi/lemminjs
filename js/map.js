@@ -33,6 +33,13 @@ class c_Map {
         this.buffer[i+2] = 0;
         this.buffer[i+3] = 0;
     };
+    draw(x,y){
+        let i = this.getBufferIndex(x, y);
+        this.buffer[i] = 255;
+        this.buffer[i+1] = 255;
+        this.buffer[i+2] = 255;
+        this.buffer[i+3] = 255;
+    };
     isPixelTransparent(x,y){
         x=Math.round(x);
         y=Math.round(y);

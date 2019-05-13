@@ -1,12 +1,12 @@
 import {Map} from './map.js';
 import {Lemming} from './lemming.js';
-
+import {FPS} from './lib/fps-observer.js';
 
 let Lemminjs = [];
 
 Lemminjs.push( new Lemming() );
 setInterval( ()=>{
-    Lemminjs.push( new Lemming() );
+    if(Engine.status) Lemminjs.push( new Lemming() );
 },3000)
 
 
@@ -46,6 +46,8 @@ class c_Engine{
             this.drawActor(lem);
         }
         
+        document.getElementById('FPS').innerHTML=FPS.value;
+
         //document.getElementById('lemCoords').innerHTML= lem.x+lem.w-3 +'-'+ lem.y+lem.h;
         //let b = Map.getBufferIndex(lem.x+lem.w-3,lem.y+lem.h)
         //document.getElementById('mapData').innerHTML= Map.buffer[b+3];
