@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{ 
+                margin: 0px;
+                background: black;
+                cursor: crosshair;
+                height: 100%;
+                top: 0px;
+                bottom: 0px;
+                position: absolute;
+                width: 100%;
+                display:grid;
+            }
+            canvas{ 
+                position:absolute;
+                top:0px;
+                left:0px;
+                image-rendering: pixelated;
+            }
+
+            #info {
+                z-index: 999;
+                position:fixed;
+                color: white;
+                padding: 5px;
+                left: 5px;
+                top: 5px;
+                width: 100px;
+                font-size: 10px;
+                background: #ffffff40;
+                font-family: monospace;
+            }
+
+            #container{
+                position: relative;
+                width: 1087px;
+                height: 319px;
+                place-self: center;
+                top: 0px;
+                bottom: 0px;
+                border: 15px solid #444444;
+            }
+        </style>
+        <script src="./main.js" type="module"></script>
+    </head>
+    <body>
+        <div id="info">
+            <div>
+                Coords : <span id="lemCoords">---</span>
+            </div>
+            <div>
+                Map : <span id="mapData">---</span>
+            </div>
+            <div onclick="Engine.toggle()">Pause/Resume</div>
+            <div onclick="Engine.tick()">Next Tick</div>
+
+        </div>
+        <div id="container">
+            <canvas id="map" width="1087" height="319" ></canvas>
+            <canvas id="sprites" width="1087" height="319" ></canvas>
+        </div>
+        
+        <img id="img" style="display:none" src="">
+    </body>
+</html>
