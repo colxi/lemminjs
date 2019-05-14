@@ -1,0 +1,6 @@
+{
+    "title"  : "Lemmings",
+    "source" : "1.png",
+    "startPoint" : [10,10 ],
+    "endPoint"   : [30,30 ]
+}
