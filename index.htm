@@ -58,7 +58,7 @@
                 FPS : <span id="FPS">---</span>
             </div>
             <div>
-                Coords : <span id="lemCoords">---</span>
+                Mouse : <span id="mouseCoords">---</span>
             </div>
             <div>
                 Map : <span id="mapData">---</span>
@@ -71,6 +71,8 @@
             </div>
             <div class="button" onclick="Engine.toggle()">Pause/Resume</div>
             <div class="button" onclick="Engine.tick()">Next Tick</div>
+            <div class="button" onclick="window.action='zoomIn'">Zoom In</div>
+            <div class="button" onclick="window.action='zoomOut'">Zoom Out</div>
             <div class="button" onclick="window.action='draw'">Draw</div>
             <div class="button" onclick="window.action='erase'">Erase</div>
         </div>

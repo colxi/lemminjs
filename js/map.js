@@ -69,10 +69,27 @@ const Map = {
     getImage : function(){
         MAP_IMAGE_CANVAS_CONTEXT.putImageData(MAP_IMAGE_DATA, 0,0);
         return MAP_IMAGE_CANVAS;
-        // transferToImageBitmap() requires a an ofscreencanvas not supported yet by firefox
+        // transferToImageBitmap() requires an ofscreencanvas not supported yet by firefox
         //return MAP_IMAGE_CANVAS.transferToImageBitmap();
     },
 
+    /**
+     * 
+     * Map.Cursor{} : Holds the cursor coordinates relative to the Map considering zoom and scale. 
+     *                For viewport coordinates check Viewport.Cursor , which holds mouse coordinates
+     *                relative to the Viewport. 
+     * 
+     */
+    Cursor : {
+        x : 0,
+        y : 0
+    },
+
+    /**
+     * 
+     * Map.Pixel{} : Collection of methods for direct Map pixel manipulation and inspection 
+     * 
+     */
     Pixel : {
         getColor(x,y){
             x=Math.round(x);

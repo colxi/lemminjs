@@ -1,0 +1,5 @@
+const Sprite = {
+
+};
+
+export {Sprite};
