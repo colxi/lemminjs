@@ -7,6 +7,9 @@ let MAP_IMAGE = document.createElement('img');
 let MAP_IMAGE_CANVAS = document.createElement('canvas');
 let MAP_IMAGE_CANVAS_CONTEXT = MAP_IMAGE_CANVAS.getContext('2d');
 
+MAP_IMAGE_CANVAS.width = 800;  // initial default value
+MAP_IMAGE_CANVAS.height = 600; // initial default value
+
 // Variable to store the imageData Extracted from MAP_IMAGE
 let MAP_IMAGE_DATA;
 // shorthand to to array buffer contained in MAP_IMAGE_DATA.data
@@ -73,6 +76,17 @@ const Map = {
         //return MAP_IMAGE_CANVAS.transferToImageBitmap();
     },
 
+    draw(){
+        // Draw map data in canvas
+        Engine.Viewport.Layers.map.drawImage( 
+            Engine.Map.getImage() , 
+            0 - Engine.Viewport.Scroll.x, 
+            0 - Engine.Viewport.Scroll.y, 
+            Engine.Viewport.width , 
+            Engine.Viewport.height
+        );
+       
+    },
     /**
      * 
      * Map.Cursor{} : Holds the cursor coordinates relative to the Map considering zoom and scale. 

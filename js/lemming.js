@@ -7,6 +7,7 @@ const Lemming =function(){
         direction : 1,
         action : 'walk',
         actionTick : 0,
+        _lastTickFrame : 0,
         setAction(action){
             this.actionTick = 0;
             this.action = action;
