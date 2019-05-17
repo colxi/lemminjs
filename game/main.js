@@ -42,7 +42,10 @@ import {myStates} from './my-states.js';
 
     let Actors = [];
     window.Actors=Actors;
-    for(let i = 0; i < 1; i++){
+
+    setInterval( ()=>{
+        if(Actors.length>100) return;
+        let i = Actors.length;;
         let lemming = Engine.Actor.create( 'lemming-' + i , 'player' , 'walk' );
         
         Object.defineProperty(lemming, 'groundX', {
@@ -60,7 +63,8 @@ import {myStates} from './my-states.js';
         });
         
         Actors.push( lemming);
-    };
+    },1000);
+
 
     // create states
     Engine.Actor.createState('walk', 'sprite-walk', myStates.walk);
@@ -75,6 +79,7 @@ import {myStates} from './my-states.js';
     }
     
     Engine.Loop.draw = function(){
+        document.getElementById('actorsCounts').innerHTML = Actors.length;
         Engine.Viewport.clear();
         Engine.Map.draw();
 
