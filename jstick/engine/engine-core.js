@@ -8,7 +8,7 @@ let _styles       = document.createElement('style');
 _styles.innerHTML = _stylesDef;
 document.body.appendChild(_styles);
 
-const Engine  = {
+const JStick  = {
     rootpath : '',
     status : 1,
     showInfo : true,
@@ -16,10 +16,10 @@ const Engine  = {
     updateInfo(){
         // info panel
 
-        document.getElementById('FPS').innerHTML = Engine.FPS.value;
-        document.getElementById("scaleInfo").innerHTML = Engine.Viewport.scale.toFixed(2);
-        document.getElementById("scrollInfo").innerHTML = Math.floor(Engine.Viewport.Scroll.x) +' | '+Math.floor(Engine.Viewport.Scroll.y);
-        let [ x, y ] = Engine.Viewport.getMapCoordinates( Engine.Viewport.Cursor.x,Engine.Viewport.Cursor.x); 
+        document.getElementById('FPS').innerHTML = JStick.FPS.value;
+        document.getElementById("scaleInfo").innerHTML = JStick.Viewport.scale.toFixed(2);
+        document.getElementById("scrollInfo").innerHTML = Math.floor(JStick.Viewport.Scroll.x) +' | '+Math.floor(JStick.Viewport.Scroll.y);
+        let [ x, y ] = JStick.Viewport.getMapCoordinates( JStick.Viewport.Cursor.x,JStick.Viewport.Cursor.x); 
         document.getElementById('mouseCoords').innerHTML =  x+ ' | ' + y;
 
         //let b = Map.getBufferIndex(lem.x+lem.w-3,lem.y+lem.h)
@@ -33,17 +33,17 @@ const Engine  = {
     },
 
     tick(){
-        Engine.Viewport.updateZoom();
-        Engine.Viewport.updateScroll();
-        Engine.Loop.update();
-        Engine.Loop.draw();
-        if( Engine.showInfo ) Engine.updateInfo();
+        JStick.Viewport.updateZoom();
+        JStick.Viewport.updateScroll();
+        JStick.Loop.update();
+        JStick.Loop.draw();
+        if( JStick.showInfo ) JStick.updateInfo();
     },
 
 
     toggle(){
-        Engine.status = !Engine.status;
-        Engine.frame();
+        JStickstatus = !JStickstatus;
+        JStickframe();
     },
     
     Loop : {
@@ -59,4 +59,4 @@ const Engine  = {
 
 
 
-export {Engine};
+export {JStick};

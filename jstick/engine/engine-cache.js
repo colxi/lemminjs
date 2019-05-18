@@ -1,4 +1,4 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
 
 
@@ -6,7 +6,7 @@ const SPRITES_CACHE = new WeakMap();
 const MAX_SPRITE_SIZE = 320;
 
 
-Engine.Cache = {
+JStick.Cache = {
     ADD_MISSING : true,
 
     expose(){
@@ -24,9 +24,9 @@ Engine.Cache = {
         
         SPRITES_CACHE.set( image, {
             regular : image,
-            flipX   : await Engine.Image.flip(image, true, false),
-            flipY   : await Engine.Image.flip(image, false, true),
-            flipXY  : await Engine.Image.flip(image, true, true)
+            flipX   : await JStick.Image.flip(image, true, false),
+            flipY   : await JStick.Image.flip(image, false, true),
+            flipXY  : await JStick.Image.flip(image, true, true)
         } );
     }
 }

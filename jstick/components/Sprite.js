@@ -1,4 +1,4 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
 /**
  * 
@@ -22,15 +22,15 @@ const Sprite = /* async */ function( image = '', x=0, y=0, w, h ){
         };
 
         // if source is a path, load the image
-        if( typeof image === 'string' ) image = await Engine.Image.load( image );
+        if( typeof image === 'string' ) image = await JStick.Image.load( image );
         // if cropping values are not set, use the whole image size
         w = w || image.width;
         h = h || image.height;
         // crop the image
-        let spriteImage = await Engine.Image.crop( image, x, y, w, h);
+        let spriteImage = await JStick.Image.crop( image, x, y, w, h);
         
         // cache the resultimg image (cache will cache the flipped versions too)
-        await Engine.Cache.sprite( spriteImage ); 
+        await JStick.Cache.sprite( spriteImage ); 
 
         // build the Sprite object
         this.__type__ = 'Sprite';

@@ -1,21 +1,21 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
-Engine.Input = {
+JStick.Input = {
     
 };
 
 
 
 
-Engine.Map = {
+JStick.Map = {
     draw( map ){
         // Draw map data in canvas
-        Engine.Viewport.Layers.map.drawImage( 
+        JStick.Viewport.Layers.map.drawImage( 
             map, 
-            0 - Engine.Viewport.Scroll.x, 
-            0 - Engine.Viewport.Scroll.y, 
-            Engine.Viewport.width , 
-            Engine.Viewport.height
+            0 - JStick.Viewport.Scroll.x, 
+            0 - JStick.Viewport.Scroll.y, 
+            JStick.Viewport.width , 
+            JStick.Viewport.height
         )   
     }
 };

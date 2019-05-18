@@ -1,4 +1,4 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
 
 let ACTOR_ID = 0;
@@ -70,7 +70,7 @@ Actor.prototype.updateState = function(...args){
 
 Actor.prototype.draw = function(){
     let sprite = this.getCurrentSprite();
-    Engine.Sprite.draw( sprite , this.x, this.y,  this.flip.x, this.flip.y  );
+    JStick.Sprite.draw( sprite , this.x, this.y,  this.flip.x, this.flip.y  );
     return true;
 }
 

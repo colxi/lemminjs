@@ -1,4 +1,4 @@
-import {Engine} from './engine/engine-core.js';
+import {JStick} from './engine/engine-core.js';
 import './engine/engine-viewport.js';
 import {FPS} from './lib/fps-observer.js';
 import './engine/engine-image.js';
@@ -8,6 +8,6 @@ import './engine/engine-sprite.js';
 import './engine/engine-cache.js';
 
 
-Engine.FPS = FPS;
+JStick.FPS = FPS;
 
-export {Engine};
+export {JStick};

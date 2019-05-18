@@ -2,7 +2,7 @@
 
 LemminJS is a clone of the Lemmings® classic game (by Dailly and David Jones), implemented using Javascript (ES6).
 
-Yhe objective in this personal project is to achieve a functional full-playable game, with some modern extra capabilities implemented (viewport zoom, cross device, seponsive UI...) , without using any sort of external game engine. 
+Yhe objective in this personal project is to achieve a functional full-playable game, with some modern extra capabilities implemented (viewport zoom, cross device, seponsive UI...) , without using any sort of external game JStick 
 
 > In development! 
 

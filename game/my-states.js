@@ -1,4 +1,4 @@
-import {Engine} from '../jstick/jstick.js';
+import {JStick} from '../jstick/jstick.js';
 
 function checkGroundCollision( sprite ){
     let x = Math.floor( this.x +5 - (5/2) );
@@ -9,7 +9,7 @@ function checkGroundCollision( sprite ){
 
 function canGoDown( actor ){
     /*
-    Engine.Animations
+    JStickAnimations
     actor.x 
     actor.action.animation.imageBitmap.width + ()
     let bottomX = Math.floor( sprite.x + 5 - (5/2) );

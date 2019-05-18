@@ -1,4 +1,4 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
 /**
  * 

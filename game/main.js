@@ -1,4 +1,4 @@
-import {Engine} from '../jstick/jstick.js';
+import {JStick} from '../jstick/jstick.js';
 import {Sprite}    from '../jstick/components/Sprite.js';
 import {Animation} from '../jstick/components/Animation.js';
 import {State}     from '../jstick/components/State.js';
@@ -9,15 +9,17 @@ import {PixelMap}  from '../jstick/components/PixelMap.js';
 import {myStates} from './my-states.js';
 
 
-window.Engine = Engine;
+window.JStick = JStick;
 
+let pixelMap;
+let Actors
 
 (async function(){
-    Engine.Viewport.deviceCursor(false);
+    JStick.Viewport.deviceCursor(false);
 
 
     // Load the spritesheet
-    let spriteSheet  = await Engine.Image.load( './spritesheet/lemmings.png' );
+    let spriteSheet  = await JStick.Image.load( './spritesheet/lemmings.png' );
     // generate walking animation with the walking sprites from spritesheet
     let walkAnimation = new Animation({
         0  : await new Sprite( spriteSheet,  5,  1, 4, 9 ), 
@@ -33,7 +35,7 @@ window.Engine = Engine;
     let walkState = new State( 'walk', walkAnimation, myStates.walk );
     let fallState = new State( 'fall',  walkAnimation, myStates.fall );
 
-    let Actors = [];
+    Actors = [];
     let interval = setInterval( ()=>{
         Actors.push(
             new Actor({
@@ -50,11 +52,11 @@ window.Engine = Engine;
     }, 1000);
 
 
-    let pixelMap = await new PixelMap('./maps/map2.png');
+    pixelMap = await new PixelMap('./maps/map2.png');
 
 
     /** LOOP : UPDATE */
-    Engine.Loop.update = function(){
+    JStick.Loop.update = function(){
         // iterate all actors and update their States
         for(let i = 0; i < Actors.length; i++){ 
             Actors[i].updateState( pixelMap );
@@ -62,26 +64,25 @@ window.Engine = Engine;
     }
     
     /* LOOP : DRAW */
-    Engine.Loop.draw = function(){
+    JStick.Loop.draw = function(){
         document.getElementById('actorsCounts').innerHTML = Actors.length;
-        Engine.Viewport.clear();
+        JStick.Viewport.clear();
         pixelMap.draw( );
 
         // RENDER LAYER :
         for(let i = 0; i < Actors.length; i++) Actors[i].draw();
         // RENDER STAGE :
-        Engine.Viewport.drawCursor();
+        JStick.Viewport.drawCursor();
 
         return;
     }
-    Engine.frame();
+    JStick.frame();
 
 })();
 
 
 
 window.action = 'erase';
-
 
 let clicked = false;
 container.onmousedown = (e)=>{ clicked = true; }
@@ -91,44 +92,44 @@ container.onmouseup   = (e)=>{ clicked = false; }
 container.onclick= e=>{
     console.log(e)
     if(window.action === 'zoomIn'){
-        Engine.Viewport.zoomTo( Engine.Viewport.scale + Engine.Viewport.scaleFactor , e.layerX , e.layerY  )
+        JStick.Viewport.zoomTo( JStick.Viewport.scale + JStick.Viewport.scaleFactor , e.layerX , e.layerY  )
     }
     if(window.action === 'zoomOut'){
-        Engine.Viewport.zoomTo( Engine.Viewport.scale - Engine.Viewport.scaleFactor , e.layerX , e.layerY  )
+        JStick.Viewport.zoomTo( JStick.Viewport.scale - JStick.Viewport.scaleFactor , e.layerX , e.layerY  )
     }
 }
 
 
 container.onmousemove= e=>{
     if(clicked){
-        let [x , y] = Engine.Viewport.getMapCoordinates(e.layerX,e.layerY);
+        let [x , y] = JStick.Viewport.getMapCoordinates(e.layerX,e.layerY);
 
 
         if(window.action === 'erase'){
-            Engine.Map.Pixel.erase(x -1, y -1);
-            Engine.Map.Pixel.erase(x +0, y -1);
-            Engine.Map.Pixel.erase(x +1, y -1);
+            pixelMap.clearPixel(x -1, y -1);
+            pixelMap.clearPixel(x +0, y -1);
+            pixelMap.clearPixel(x +1, y -1);
 
-            Engine.Map.Pixel.erase(x -1, y +0);
-            Engine.Map.Pixel.erase(x +0, y +0);
-            Engine.Map.Pixel.erase(x +1, y +0);
+            pixelMap.clearPixel(x -1, y +0);
+            pixelMap.clearPixel(x +0, y +0);
+            pixelMap.clearPixel(x +1, y +0);
 
-            Engine.Map.Pixel.erase(x -1, y +1);
-            Engine.Map.Pixel.erase(x +0, y +1);
-            Engine.Map.Pixel.erase(x +1, y +1);
+            pixelMap.clearPixel(x -1, y +1);
+            pixelMap.clearPixel(x +0, y +1);
+            pixelMap.clearPixel(x +1, y +1);
         }
         else if(window.action=== 'draw'){
-            Engine.Map.Pixel.draw(x -1, y -1);
-            Engine.Map.Pixel.draw(x +0, y -1);
-            Engine.Map.Pixel.draw(x +1, y -1);
+            pixelMap.setPixel(x -1, y -1, [255,255,255,255]);
+            pixelMap.setPixel(x +0, y -1, [255,255,255,255]);
+            pixelMap.setPixel(x +1, y -1, [255,255,255,255]);
 
-            Engine.Map.Pixel.draw(x -1, y +0);
-            Engine.Map.Pixel.draw(x +0, y +0);
-            Engine.Map.Pixel.draw(x +1, y +0);
+            pixelMap.setPixel(x -1, y +0, [255,255,255,255]);
+            pixelMap.setPixel(x +0, y +0, [255,255,255,255]);
+            pixelMap.setPixel(x +1, y +0, [255,255,255,255]);
 
-            Engine.Map.Pixel.draw(x -1, y +1);
-            Engine.Map.Pixel.draw(x +0, y +1);
-            Engine.Map.Pixel.draw(x +1, y +1);
+            pixelMap.setPixel(x -1, y +1, [255,255,255,255]);
+            pixelMap.setPixel(x +0, y +1, [255,255,255,255]);
+            pixelMap.setPixel(x +1, y +1, [255,255,255,255]);
         }
     }
 }

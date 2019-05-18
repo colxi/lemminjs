@@ -1,4 +1,4 @@
-import {Engine} from '../jstick.js';
+import {JStick} from '../jstick.js';
 
 
 const PixelMap = /* async */ function( image = '' ){
@@ -13,14 +13,14 @@ const PixelMap = /* async */ function( image = '' ){
         };
 
         // if source is a path, load the image
-        if( typeof image === 'string' ) image = await Engine.Image.load( image );
+        if( typeof image === 'string' ) image = await JStick.Image.load( image );
 
         
         // convert the bitmap image into a ImageData object (with its internal BufferArray)
         // for easy and fast directo pixel level manipulation
-        let imageData = Engine.Image.imageBitmapToImageData( image );
+        let imageData = JStick.Image.imageBitmapToImageData( image );
         // When the imageData buffer is ready to be printed, it needs to be converted to a
-        // ImageBitmap in order to be used by Engine.Viewport.Layers.map.drawImage. To perform 
+        // ImageBitmap in order to be used by JStick.Viewport.Layers.map.drawImage. To perform 
         // this conversion the following  offscreen canvas will be used
         let transferCanvas =  new OffscreenCanvas(image.width,image.height).getContext('2d');
         
@@ -43,7 +43,7 @@ const PixelMap = /* async */ function( image = '' ){
             let imageBitmap = transferCanvas.canvas.transferToImageBitmap();
             // The ImageBitmap interface represents a bitmap image which can be drawn to 
             // a <canvas> without undue latency 
-            Engine.Map.draw( imageBitmap );
+            JStick.Map.draw( imageBitmap );
         }
         
        return resolve( this);
@@ -72,10 +72,10 @@ PixelMap.prototype.getPixel = function(x, y){
 
     let i = this.getPixelIndex(x, y);
     return [
-        MAP_IMAGE_BUFFER[ i ],     // RED
-        MAP_IMAGE_BUFFER[ i + 1 ], // GREEN
-        MAP_IMAGE_BUFFER[ i + 2 ], // BLUE
-        MAP_IMAGE_BUFFER[ i + 3 ]  // ALPHA
+        this.buffer[ i ],     // RED
+        this.buffer[ i + 1 ], // GREEN
+        this.buffer[ i + 2 ], // BLUE
+        this.buffer[ i + 3 ]  // ALPHA
     ]
 };
 
@@ -85,10 +85,10 @@ PixelMap.prototype.setPixel = function(x, y , color=[]){
     y <<= 0;
 
     let i = this.getPixelIndex(x, y);
-    MAP_IMAGE_BUFFER[i]   = color[0] || 0;    // RED
-    MAP_IMAGE_BUFFER[i+1] = color[1] || 0;    // GREEN
-    MAP_IMAGE_BUFFER[i+2] = color[2] || 0;    // BLUE
-    MAP_IMAGE_BUFFER[i+3] = color[3] || 255;  // ALPHA
+    this.buffer[i]   = color[0] || 0;    // RED
+    this.buffer[i+1] = color[1] || 0;    // GREEN
+    this.buffer[i+2] = color[2] || 0;    // BLUE
+    this.buffer[i+3] = color[3] || 255;  // ALPHA
     return true;
 },
 
@@ -98,10 +98,10 @@ PixelMap.prototype.clearPixel = function(x, y ){
     y <<= 0;
 
     let i = this.getPixelIndex(x, y);
-    MAP_IMAGE_BUFFER[i] = 0;
-    MAP_IMAGE_BUFFER[i+1] = 0;
-    MAP_IMAGE_BUFFER[i+2] = 0;
-    MAP_IMAGE_BUFFER[i+3] = 0;
+    this.buffer[i] = 0;
+    this.buffer[i+1] = 0;
+    this.buffer[i+2] = 0;
+    this.buffer[i+3] = 0;
 };
 
 PixelMap.prototype.getPixelAlpha = function(x, y ){
@@ -109,7 +109,7 @@ PixelMap.prototype.getPixelAlpha = function(x, y ){
     y <<= 0;
 
     let i = this.getPixelIndex(x, y);
-    return MAP_IMAGE_BUFFER[ i + 3 ];
+    return this.buffer[ i + 3 ];
 };
 
 
