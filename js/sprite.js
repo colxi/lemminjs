@@ -1,254 +1,58 @@
-import {ImageToolset} from './lib/image-toolset.js'
-import {Engine} from './engine.js'
+import {Engine} from './engine.js';
 
-let _spriteConstructor = function Sprite(sprite){
-    this.imageBitmap = sprite;
-    this.flipX = false;
-    this.flipY = false;
-    this.offsetX = 0; // or marginX and marginY
-    this.offsetY = 0;
-    return this;
-}
-
-let SPRITES_DEFINITIONS = {
-    // "./path/source.json" : { },
-    // "./path/source.json" : { },
-    // ...
-};
-
-let SPRITESHEETS = {
-    // "./path/source.png" : imageBitmap,
-    // "./path/source.png" : imageBitmap,
-    // ...
-};
-
-let SPRITES = {
-    /*
-    "walk" : {
-            "spritesheet" : "./path/source.png",
-            "loop" : true,
-            "length" : 20,
-            "frames" : {
-                "0" : {
-                    regular : {
-                        "imageBitmap" : <imageBitmap>,
-                        "pivot" : [ 5 ,5 ]    
-                    },
-                    flipX : {
-                        "imageBitmap" : <imageBitmap>,
-                        "pivot" : [ 5 ,5 ]    
-                    },          
-                },             
-                "10" : {
-                    regular : {
-                        "imageBitmap" : <imageBitmap>,
-                        "pivot" : [ 5 ,5 ]    
-                    },
-                    flipX : {
-                        "imageBitmap" : <imageBitmap>,
-                        "pivot" : [ 5 ,5 ]    
-                    },          
-                }
-            }
-        }
-    */
-};
-
-let spritesheetResolverId = 0;
-let spritesheetResolver = {};
-let spritesheetOnload = async function( src , id , img){
-    if( !SPRITESHEETS.hasOwnProperty( src ) ){
-        SPRITESHEETS[src] = await createImageBitmap( img ,0 ,0 , img.width, img.height );
-    }
-    console.log( 'Engine.Sprite.loadSpritesheetImage() : Spritesheet loaded : ' , src );
-
-    spritesheetResolver[ id ]( SPRITESHEETS[src] );
-    delete spritesheetResolver[ id ];
-}
-
-let SPRITES_CACHE = new WeakMap();
-let MAX_CACHE_SIZE = 320;
-
-const cacheSprite = async function( image ){
-    if(image.width > MAX_CACHE_SIZE || image.height > MAX_CACHE_SIZE ) return false;
+/**
+ * 
+ * Sprite Constructor : (async) Builds a Sprite Object, from the provided imageBitmap
+ *                      or filepath string. If croping coordinates are provided, the
+ *                      Sprite will be cropped from the source image. In the proces
+ *                      of building, some preprocessing is done and cached (X/Y image flip)
+ *                      
+ * 
+ * 
+ */
+const Sprite = /* async */ function( image = '', x=0, y=0, w, h ){
+    // handle requests performed without using the keyword 'new'
+    // otherwhise the Constructor will fail for the lack of own context (this)
+    if( !this ) return new Sprite(image, x, y, w, h);
     
-    SPRITES_CACHE.set( image, {
-        regular : image,
-        flipX   : await ImageToolset.flipImage(image, true, false),
-        flipY   : await ImageToolset.flipImage(image, false, true),
-        flipXY  : await ImageToolset.flipImage(image, true, true)
-    } );
-};
-
-
-const Sprite = {
-    async loadImage( src , cache=true ){
-        let image = await ImageToolset.loadImage( src );
-        if(cache) await cacheSprite( image );
-        return image;
-    },
-
-
-    async fromImageBitmap( image, x, y, w, h, cache=true){
-        if( !(image instanceof ImageBitmap) ) throw new Error('Argument 1 must be a ImageBitmap');
-        let sprite = await ImageToolset.cropImage( image, x, y, w, h);
-
-        if(cache) await cacheSprite( sprite );
-        //return sprite;
-
-        return new _spriteConstructor(sprite);
-    },
-
-    declareAnimation( name='', loop=true, length=0 , frames={ 0 : Image, 10 : Image } ){ 
-        return {
-            name,
-            loop,
-            length,
-            frames
+    return new Promise( async resolve =>{
+        // input validation
+        if( !(image instanceof ImageBitmap) && (typeof image !== 'string') ){
+            throw new Error('Argument 1 must be a filepath or an ImageBitmap');
         };
-    },
 
-    async importAnimationCollection( src ){
-        let Animations = {};
+        // if source is a path, load the image
+        if( typeof image === 'string' ) image = await Engine.Image.load( image );
+        // if cropping values are not set, use the whole image size
+        w = w || image.width;
+        h = h || image.height;
+        // crop the image
+        let spriteImage = await Engine.Image.crop( image, x, y, w, h);
+        
+        // cache the resultimg image (cache will cache the flipped versions too)
+        await Engine.Cache.sprite( spriteImage ); 
 
-        let Collection = fetch( src.json ).json(); 
-        for(let animation in Collection ){
-            let AnimationFrames = {};
-            for(let frame in Collection[animation].frames ){
-                let spriteImageRaw = await Sprite.loadImage( Collection[animation].frames[frame].src );
-                AnimationFrames[ frame ] = await Sprite.fromImageBitmap(
-                    spriteImageRaw , 
-                    Collection[animation].frames[frame].x ,
-                    Collection[animation].frames[frame].y ,
-                    Collection[animation].frames[frame].width ,
-                    Collection[animation].frames[frame].height 
-                );
-            }
-            Animations[animation] = await Sprite.declareAnimation( 
-                animation,
-                Collection[animation].loop, 
-                Collection[animation].length, 
-                AnimationFrames  
-            );
+        // build the Sprite object
+        this.__type__ = 'Sprite';
+        this.image = spriteImage;
+        this.flip = {
+            x : false,
+            y : false
+        };
+        /*
+        // TODO !!! ¿ Sprite padding : add blank space?
+        this.padding = {
+            x : 0,
+            y : 0
         }
-        return Animations;
-    },
+        or better Axis, pivot, and XY offsets.. to be able to keep aligned the sprite 
+        in Animations where each sprite has a different size...or the stand/crop probem
+        when main coordinates are in the top-left corner of the sprite
+        */
 
-
-
-
-    async import(src){
-        let spriteDefinitions = await Sprite.loadDefinitions(src);
-        let spriteSheetImage = await Sprite.loadSpritesheetImage( spriteDefinitions.spritesheet );
-        let sprites = await Sprite.generate( spriteDefinitions.spritesheet,  spriteDefinitions.sprites );
-        return sprites;
-    },
-
-
-    async loadDefinitions(src=''){
-        console.log( 'Engine.Sprite.loadDefinitions() : Loading Sprite definitions : ' , src );
-        if( !SPRITES_DEFINITIONS.hasOwnProperty( src ) ){
-            SPRITES_DEFINITIONS[src] = await ( await fetch(Engine.rootpath + src ) ).json();
-        }
-        return SPRITES_DEFINITIONS[src];
-    },
-
-
-    async loadSpritesheetImage(src=''){
-        console.log( 'Engine.Sprite.loadSpritesheetImage() : Loading spritesheet : ' , src );
-        return new Promise( resolve=>{
-            spritesheetResolverId++;
-            spritesheetResolver[spritesheetResolverId] = resolve;
-            if( !SPRITESHEETS.hasOwnProperty( src ) ){
-                console.log( 'Engine.Sprite.loadSpritesheetImage() : Not cached. Loading  : ' , src );
-                let img = document.createElement('img');
-                img.onload = (e)=> spritesheetOnload(src, spritesheetResolverId, img);
-                img.onerror = ()=>{ throw new Error('Engine.Sprite.loadSpritesheetImage() : Spritesheet Image not found : ' + Engine.rootpath +  src) };
-                img.src = Engine.rootpath + src;
-            }else{
-                console.log( 'Engine.Sprite.loadSpritesheetImage() : Cached! : ' + src );
-                spritesheetOnload(src, spritesheetResolverId, false);
-            }
-        })
-    },
-
-    // process the whole spritesheed definitio and return all generated Ssprites 
-    async generate( spritesheetSrc , sprites ){
-        if( !SPRITESHEETS.hasOwnProperty( spritesheetSrc ) ){
-            console.log( 'Engine.Sprite.generate() : Spreadsheet' , spritesheetSrc, 'is not yet loaded.'  );
-            await Sprite.loadSpritesheetImage( spritesheetSrc );
-        }
-
-        console.log( 'Engine.Sprite.generate() : Generating sprites with : ' , spritesheetSrc );
-        for(let spriteName in sprites){
-            if( !sprites.hasOwnProperty(spriteName) ) continuSe;
-            
-            console.log( 'Engine.Sprite.generate() : Generating sprite  : ' , spriteName );
-            let currentSprite = sprites[spriteName];
-            // extract and assign sprite properties
-            SPRITES[ spriteName ] = {
-                spritesheet : spritesheetSrc,
-                loop        : currentSprite.loop,
-                length      : currentSprite.length,
-                frames      : {}
-            };
-            // iterate each frame definition
-            for( let frame in currentSprite.frames ){
-                if( !currentSprite.frames.hasOwnProperty(frame) ) continue;
-                
-                let currentFrame = currentSprite.frames[ frame ];
-                let image = await createImageBitmap( SPRITESHEETS[spritesheetSrc] ,currentFrame.x, currentFrame.y ,currentFrame.width, currentFrame.height );
-                SPRITES[ spriteName ].frames[ frame ] = {
-                    imageBitmap : image,
-                    pivot : currentSprite.frames[ frame ].pivot
-                }
-
-            }
-        }
-
-        return SPRITES
-    },
-    
-    // return single sprite extracted from Spritesheet image
-    async getFromSpritesheet( spritesheetSrc , x, y, width, height){
-        if( !SPRITESHEETS.hasOwnProperty( spritesheetSrc ) ){
-            console.log( 'Engine.Sprite.getSpriteFromSpritesheet() : Spreadsheet' , spritesheetSrc, 'is not yet loaded.'  );
-            await Sprite.loadSpritesheetImage( spritesheetSrc );
-        }
-        let image = await createImageBitmap( SPRITESHEETS[spritesheetSrc] ,currentFrame.x, currentFrame.y ,currentFrame.width, currentFrame.height );
-
-    },
-
-    getById( name , frame=0 ){
-        return SPRITES[name].frames[frame].imageBitmap;
-    },
-
-    draw(x=0,y=0,sprite){ 
-
-        let lemCenter = {
-            x : x + sprite.width  - 3 - Engine.Viewport.Scroll.x,
-            y : y + sprite.height - 1 - Engine.Viewport.Scroll.y,
-        }
-        Engine.Viewport.Layers.sprites.drawImage( 
-            sprite , 
-            x - Engine.Viewport.Scroll.x, 
-            y - Engine.Viewport.Scroll.y, 
-            sprite.width , 
-            sprite.height
-        );
-
-        // draw lemming
-        //Engine.Viewport.Layers.sprites.fillStyle = "#FFFFFFAA";
-        //Engine.Viewport.Layers.sprites.fillRect(x, y, lem.w, lem.h);
-
-        // draw axis
-        Engine.Viewport.Layers.sprites.fillStyle = "#00FFFF";
-        Engine.Viewport.Layers.sprites.fillRect(lemCenter.x, lemCenter.y,1,5);
-
-        // draw ground coord
-        Engine.Viewport.Layers.sprites.fillStyle = "#FFFF00";
-        Engine.Viewport.Layers.sprites.fillRect(lemCenter.x, lemCenter.y,1,1);
-    }
-};
+        // done!
+        return resolve(this);
+    })
+}
 
 export {Sprite};

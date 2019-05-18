@@ -1,21 +1,16 @@
-let LOAD_IMAGE_RESOLVER = [];
-let LOAD_IMAGE_RESOLVER_ID = 0;
+import {Engine} from './engine.js';
 
-const ImageToolset = {
-    async loadImage(src){ 
+
+Engine.Image = {
+    async load(src){ 
         if( typeof src !== 'string') throw new Error('First argument must be a filepath (string)');
         return new Promise( resolve =>{
-            // increase the id conuter
-            LOAD_IMAGE_RESOLVER_ID++;
-            // save the resolver function using the id as index
-            LOAD_IMAGE_RESOLVER[ LOAD_IMAGE_RESOLVER_ID ] = resolve;
             // create an image element
             let img = document.createElement('img');
             // set onload handler : when image is loaded resolve promise
             img.onload = async function(e){
                 let image = await createImageBitmap( img, 0 ,0 , img.width, img.height );
                 resolve( image )
-                delete LOAD_IMAGE_RESOLVER[ LOAD_IMAGE_RESOLVER_ID ]; 
             }
             // set on error handler : if load fails throw an error
             img.onerror = ()=>{ throw new Error('Image not found at ' + src) };
@@ -24,12 +19,12 @@ const ImageToolset = {
         });
     },
 
-    async cropImage( image, x, y, w, h){ 
+    async crop( image, x, y, w, h){ 
         let croppedImage = await createImageBitmap( image ,x ,y ,w ,h );
         return croppedImage;
     },
 
-    async flipImage(image, horizontal=true, vertical=false){
+    async flip(image, horizontal=true, vertical=false){
 
         let ctx = document.createElement('canvas').getContext('2d');
         ctx.canvas.width= image.width;
@@ -52,4 +47,3 @@ const ImageToolset = {
  
 }
 
-export {ImageToolset};

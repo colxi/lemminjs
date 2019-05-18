@@ -1,3 +1,5 @@
+import {Engine} from './engine.js';
+
 // Image Element, where the Map image is initially loaded
 let MAP_IMAGE = document.createElement('img');
 
@@ -56,7 +58,7 @@ const _getPixelIndex = function(x,y){
 };
 
 
-const Map = {
+Engine.Map = {
     get width(){ return MAP_WIDTH },
     get height(){ return MAP_HEIGHT },
 
@@ -150,4 +152,3 @@ const Map = {
 
 }
 
-export {Map};

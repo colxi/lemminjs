@@ -18,7 +18,7 @@ let TARGET_SCROLL = false; /*{
 
 
 
-let Viewport = {
+Engine.Viewport = {
     width : document.getElementById('map').width,
     height : document.getElementById('map').height,
     Layers : {
@@ -63,8 +63,8 @@ let Viewport = {
             throw new Error('Viewport.deviceCursor() : Argument 1 must be a Boolean');
         }
 
-        if( value ) Viewport.Layers.container.removeAttribute('hide-device-cursor');
-        else Viewport.Layers.container.setAttribute('hide-device-cursor',true);
+        if( value ) Engine.Viewport.Layers.container.removeAttribute('hide-device-cursor');
+        else Engine.Viewport.Layers.container.setAttribute('hide-device-cursor',true);
         return true;
     },
     // flag to enable or disable automatic viewport cursor changes tracking 
@@ -101,17 +101,17 @@ let Viewport = {
 
     drawCursor : function(){     
         // render cursor
-        Viewport.Layers.sprites.fillStyle = "#FFFFF";
+        Engine.Viewport.Layers.sprites.fillStyle = "#FFFFF";
 
-        Viewport.Layers.sprites.fillRect(
-            ( Viewport.Cursor.x / Viewport.scale ) - 5, 
-            Viewport.Cursor.y  / Viewport.scale,
+        Engine.Viewport.Layers.sprites.fillRect(
+            ( Engine.Viewport.Cursor.x / Engine.Viewport.scale ) - 5, 
+            Engine.Viewport.Cursor.y  / Engine.Viewport.scale,
             11,
             1
         );
-        Viewport.Layers.sprites.fillRect(
-            Viewport.Cursor.x / Viewport.scale, 
-            ( Viewport.Cursor.y / Viewport.scale ) - 5  ,
+        Engine.Viewport.Layers.sprites.fillRect(
+            Engine.Viewport.Cursor.x / Engine.Viewport.scale, 
+            ( Engine.Viewport.Cursor.y / Engine.Viewport.scale ) - 5  ,
             1,
             11
         );
@@ -122,7 +122,7 @@ let Viewport = {
         Engine.Viewport.Cursor.x = x;
         Engine.Viewport.Cursor.y = y;
 
-        let mapCoords = Viewport.getMapCoordinates(x,y);
+        let mapCoords = Engine.Viewport.getMapCoordinates(x,y);
         Engine.Map.Cursor.x = mapCoords[0];
         Engine.Map.Cursor.y = mapCoords[1];
     },
@@ -142,43 +142,43 @@ let Viewport = {
     updateZoom(){
         if( !TARGET_ZOOM ) return true;
 
-        let previousScale = Viewport.scale;
+        let previousScale = Engine.Viewport.scale;
   
         // if Zoom reached the expected level, disable zoom scheduler and return
-        if( Viewport.scale === TARGET_ZOOM.level  ){
+        if( Engine.Viewport.scale === TARGET_ZOOM.level  ){
             TARGET_ZOOM = false;
             return;
         }
 
-        if( TARGET_ZOOM.level > Viewport.scale ){
+        if( TARGET_ZOOM.level > Engine.Viewport.scale ){
             // ZOM IN, apply a Viewport.scaleStep scale ipncrease
-            Viewport.scale += Viewport.scaleStep;
+            Engine.Viewport.scale += Engine.Viewport.scaleStep;
             // if applying increment, zoom level became bigger than target zoom, limit it
-            if( Viewport.scale > TARGET_ZOOM.level ) Viewport.scale = TARGET_ZOOM.level;
+            if( Engine.Viewport.scale > TARGET_ZOOM.level ) Engine.Viewport.scale = TARGET_ZOOM.level;
         }else{
             // ZOM OUT
-            Viewport.scale -= Viewport.scaleStep;
+            Engine.Viewport.scale -= Engine.Viewport.scaleStep;
             // if applying increment, zoom level became bigger than target zoom, limit it
-            if( Viewport.scale < TARGET_ZOOM.level ) Viewport.scale = TARGET_ZOOM.level;
+            if( Engine.Viewport.scale < TARGET_ZOOM.level ) Engine.Viewport.scale = TARGET_ZOOM.level;
         }
 
-        if( Viewport.scale < 1 && !Viewport.allowNegativeScale ) Viewport.scale = 1;
+        if( Engine.Viewport.scale < 1 && !Engine.Viewport.allowNegativeScale ) Engine.Viewport.scale = 1;
         
         // calculate the new scroll values
-        Viewport.Scroll.x += ( TARGET_ZOOM.x / previousScale ) - ( TARGET_ZOOM.x / Viewport.scale);
-        Viewport.Scroll.y += ( TARGET_ZOOM.y / previousScale ) - ( TARGET_ZOOM.y / Viewport.scale);
+        Engine.Viewport.Scroll.x += ( TARGET_ZOOM.x / previousScale ) - ( TARGET_ZOOM.x / Engine.Viewport.scale);
+        Engine.Viewport.Scroll.y += ( TARGET_ZOOM.y / previousScale ) - ( TARGET_ZOOM.y / Engine.Viewport.scale);
         
         // experimental : limit scroll to prevent negative scrolls
-        if( Viewport.Scroll.x < 0) Viewport.Scroll.x = 0;
-        if( Viewport.Scroll.y < 0) Viewport.Scroll.y = 0;
+        if( Engine.Viewport.Scroll.x < 0) Engine.Viewport.Scroll.x = 0;
+        if( Engine.Viewport.Scroll.y < 0) Engine.Viewport.Scroll.y = 0;
     
         // apply new scale in a non acumulative way
-        Viewport.Layers.map.setTransform(1, 0, 0, 1, 0, 0);
-        Viewport.Layers.map.scale(Viewport.scale, Viewport.scale);
+        Engine.Viewport.Layers.map.setTransform(1, 0, 0, 1, 0, 0);
+        Engine.Viewport.Layers.map.scale(Engine.Viewport.scale, Engine.Viewport.scale);
 
         // apply new scale in a non acumulative way
-        Viewport.Layers.sprites.setTransform(1, 0, 0, 1, 0, 0);
-        Viewport.Layers.sprites.scale(Viewport.scale, Viewport.scale);
+        Engine.Viewport.Layers.sprites.setTransform(1, 0, 0, 1, 0, 0);
+        Engine.Viewport.Layers.sprites.scale(Engine.Viewport.scale, Engine.Viewport.scale);
 
         return true;
     },
@@ -192,11 +192,11 @@ let Viewport = {
     /**
      * 
      * Viewport.zoomTo() : With the provided zoom factor, perform a zoom at the provided Viewport coordinates.
-     *                      If no zoom factor is provided use Viewport.scaleFactor default value, and if no coordinates
+     *                      If no zoom factor is provided use Engine.Viewport.scaleFactor default value, and if no coordinates
      *                      are provided use the center of the vieport, as zooming target coordinates
      * 
      */
-    zoomTo( level = Viewport.scaleFactor, x = Math.round(Viewport.width/2), y = Math.round(Viewport.height/2) ){
+    zoomTo( level = Engine.Viewport.scaleFactor, x = Math.round(Engine.Viewport.width/2), y = Math.round(Engine.Viewport.height/2) ){
         TARGET_ZOOM = {
             x : x,
             y : y,
@@ -210,13 +210,12 @@ let Viewport = {
 }
 
 
-Viewport.Layers.map.imageSmoothingEnabled     = false;
-Viewport.Layers.sprites.imageSmoothingEnabled = false;
+Engine.Viewport.Layers.map.imageSmoothingEnabled     = false;
+Engine.Viewport.Layers.sprites.imageSmoothingEnabled = false;
 
-Viewport.Layers.container.addEventListener( 'mousemove', e=>{
+Engine.Viewport.Layers.container.addEventListener( 'mousemove', e=>{
     if( Engine.Viewport.captureCursor ){
         Engine.Viewport.setCursor( e.layerX, e.layerY );
     }
 });
 
-export {Viewport};

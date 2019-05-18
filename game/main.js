@@ -18,60 +18,60 @@
 
  */
 import {Engine} from '../js/engine.js';
+import {Sprite} from '../js/Sprite.js';
+import {Animation} from '../js/Animation.js';
+import {State} from '../js/State.js';
+import {Actor} from '../js/Actor.js';
 import {myStates} from './my-states.js';
+
+
+window.Engine = Engine;
 
 
 (async function(){
     Engine.Viewport.deviceCursor(false);
-    // create actors
-    let spriteSheet= await Engine.Sprite.loadImage('./spritesheet/lemmings.png');
-    let spriteWalk_1 = await Engine.Sprite.fromImageBitmap( spriteSheet, 5, 1, 4, 9 );
-    let spriteWalk_2 = await Engine.Sprite.fromImageBitmap( spriteSheet, 21, 0, 5, 10 );
-    let walkAnimation = Engine.Sprite.declareAnimation( 
-        'walk', 
-        true, 
-        20, 
-        { 
-            0  : spriteWalk_1, 
-            10 : spriteWalk_2 
-        } 
-    ); 
 
-    console.log( walkAnimation );
 
+    // Load the spritesheet
+    let spriteSheet  = await Engine.Image.load( './spritesheet/lemmings.png' );
+    // generate walking animation with the walking sprites from spritesheet
+    let walkAnimation = new Animation({
+        0  : await new Sprite( spriteSheet,  5,  1, 4, 9 ), 
+        10 : await new Sprite( spriteSheet, 21,  0, 5, 10 ), 
+        20 : await new Sprite( spriteSheet, 36,  1, 6, 9 ), 
+        30 : await new Sprite( spriteSheet, 52,  1, 5, 9 ), 
+        40 : await new Sprite( spriteSheet, 69,  1, 4, 9 ), 
+        50 : await new Sprite( spriteSheet, 85,  0, 5, 10 ), 
+        60 : await new Sprite( spriteSheet, 100, 1, 6, 9 ),
+        70 : await new Sprite( spriteSheet, 116, 1, 5, 9 ) 
+    } , 80 , true ); 
+
+    let walkState = new State( 'walk', walkAnimation, myStates.walk );
+    let fallState = new State( 'fall',  walkAnimation, myStates.fall );
 
     let Actors = [];
-    window.Actors=Actors;
-
-    setInterval( ()=>{
-        if(Actors.length>100) return;
-        let i = Actors.length;;
-        let lemming = Engine.Actor.create( 'lemming-' + i , 'player' , 'walk' );
-        
-        Object.defineProperty(lemming, 'groundX', {
-            get: function() {
-                return Math.floor( this.x +5 - (5/2) );
-                return Math.floor( this.x + this.w- (this.w/2) );
-            }
-        });
-
-        Object.defineProperty(lemming, 'groundY', {
-            get: function() {
-                return Math.floor( this.y + 5-1 );
-                return Math.floor( this.y + this.h-1 );
-            }
-        });
-        
-        Actors.push( lemming);
-    },1000);
+    let interval = setInterval( ()=>{
+        Actors.push(
+            new Actor({
+                name   : 'Actor-' + Actors.length,
+                states : [walkState, fallState],
+                state  : 'walk',
+                x      : 500,
+                y      : 80,
+                attributes : {
+                    direction : 1,
+                    get groundX(){ return Math.floor( this.__parent__.x + 5 - (5/2) ) },
+                    get groundY(){ return Math.floor( this.__parent__.y + 9 - 1 ) }
+                }
+            }) 
+        );
+        if( Actors.length > 0 ) clearInterval( interval );
+    }, 1000);
 
 
-    // create states
-    Engine.Actor.createState('walk', 'sprite-walk', myStates.walk);
-    Engine.Actor.createState('fall', 'sprite-fall', myStates.fall);
 
-    let Sprites = await Engine.Sprite.import('./my-sprites.json');
-    let Map     = await Engine.Map.load('./maps/map2.png');
+
+    let Map = await Engine.Map.load('./maps/map2.png');
 
     Engine.Loop.update = function(){
         // iterate lemminjs and update
@@ -83,15 +83,15 @@ import {myStates} from './my-states.js';
         Engine.Viewport.clear();
         Engine.Map.draw();
 
-        // SPRITES LAYER
+        // RENDER LAYER :
         for(let i = 0; i < Actors.length; i++) Actors[i].draw();
-        
         // RENDER STAGE :
         Engine.Viewport.drawCursor();
 
         return;
     }
     Engine.frame();
+
 })();
 
 
@@ -148,5 +148,6 @@ container.onmousemove= e=>{
         }
     }
 }
+
 
 
