@@ -1,11 +1,10 @@
-import {Engine} from '../js/engine.js';
+import {Engine} from '../jstick/jstick.js';
 
 function checkGroundCollision( sprite ){
     let x = Math.floor( this.x +5 - (5/2) );
     let y = Math.floor( this.y + 5-1 );
 
 }
-
 
 
 function canGoDown( actor ){
@@ -16,54 +15,58 @@ function canGoDown( actor ){
     let bottomX = Math.floor( sprite.x + 5 - (5/2) );
     let bottomY = Math.floor( sprite.y + 5-1 );
 
-    if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+1) &&
-        Engine.Map.Pixel.isTransparent(lem.attributes.groundX + (1 *lem.attributes.direction), lem.attributes.groundY+1) &&
-        Engine.Map.Pixel.isTransparent(lem.attributes.groundX + (2 *lem.attributes.direction), lem.attributes.groundY+1) ){
+    if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+1) &&
+        pixelMap.isPixelTransparent(groundX(lem) + (1 *lem.attributes.direction), groundY(lem)+1) &&
+        pixelMap.isPixelTransparent(groundX(lem) + (2 *lem.attributes.direction), groundY(lem)+1) ){
         return true;
     }
     */
 }
 
+function groundX(lem){ return Math.floor( lem.x + 5 - (5/2) ) };
+
+function groundY(lem){ return Math.floor( lem.y + 9 - 1 ) }
+
 let myStates = {
-    fall(lem){
+    fall(lem, pixelMap){
         lem.y++;
-        if( !Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY) ){ 
+        if( !pixelMap.isPixelTransparent(groundX(lem), groundY(lem)) ){ 
             lem.y--;
             lem.setState('walk');
             return;
         }
 
     },
-    walk(lem){
+    walk(lem, pixelMap){
         if(lem.actionTick % 3) return;
         lem.x  = lem.x + ( .5 * lem.attributes.direction );
         
         // if should fall... adjust y coordinate
-        if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+1) &&
-            Engine.Map.Pixel.isTransparent(lem.attributes.groundX + (1 *lem.attributes.direction), lem.attributes.groundY+1) &&
-            Engine.Map.Pixel.isTransparent(lem.attributes.groundX + (2 *lem.attributes.direction), lem.attributes.groundY+1) ){ 
+        if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+1) &&
+            pixelMap.isPixelTransparent(groundX(lem) + (1 *lem.attributes.direction), groundY(lem)+1) &&
+            pixelMap.isPixelTransparent(groundX(lem) + (2 *lem.attributes.direction), groundY(lem)+1) ){ 
             lem.y++;
             // if the fall is bigger than 3 pixels, set falling action
-            if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+1) && 
-                Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+2) &&
-                Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+3) &&
-                Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY+4) 
+            if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+1) && 
+                pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+2) &&
+                pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+3) &&
+                pixelMap.isPixelTransparent(groundX(lem), groundY(lem)+4) 
             ) lem.setState('fall');
             return;
         }
         // if it shouldnt fall... keep walking
         else{
-            if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY) ){ } // do nothing 
-            else if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY-1) ) lem.y -= 1;
-            else if( Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY-2) ) lem.y -= 2;
+            if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)) ){ } // do nothing 
+            else if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)-1) ) lem.y -= 1;
+            else if( pixelMap.isPixelTransparent(groundX(lem), groundY(lem)-2) ) lem.y -= 2;
             else{
                 lem.attributes.direction *= -1;
                 lem.flip.x = !lem.flip.x;
                 lem.x  = lem.x + ( 1 * lem.attributes.direction );
             } 
 
-            if( !Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY-3) ||
-                !Engine.Map.Pixel.isTransparent(lem.attributes.groundX, lem.attributes.groundY-4) 
+            if( !pixelMap.isPixelTransparent(groundX(lem), groundY(lem)-3) ||
+                !pixelMap.isPixelTransparent(groundX(lem), groundY(lem)-4) 
             ){ 
                 lem.attributes.direction *= -1;
                 lem.flip.x = !lem.flip.x;

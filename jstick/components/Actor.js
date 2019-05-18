@@ -1,10 +1,10 @@
-import {Engine} from './engine.js';
+import {Engine} from '../jstick.js';
 
 
 let ACTOR_ID = 0;
 
 
-const Actor =  function( config = {} ){
+const Actor =  function( config  ){
     // handle requests performed without using the keyword 'new'
     // otherwhise the Constructor will fail for the lack of own context (this)
     if( !this ) return new Actor( name );
@@ -13,7 +13,6 @@ const Actor =  function( config = {} ){
     this.__stateTick__             = 0;
     this.__lasAnimationKeyframe__  = 0;
     this.__states__                = {} 
-    this.name           = config.name;
     this.type           = config.type || 'default';
     this.x              = config.x || 0;
     this.y              = config.y || 0;
@@ -49,7 +48,7 @@ Actor.prototype.setState = function(state){
     return true;
 };
 
-Actor.prototype.updateState = function(){
+Actor.prototype.updateState = function(...args){
     // increase the counter of the state by 1 cycle
     this.__stateTick__++;
     // recover the state animation keyframes definitions
@@ -65,7 +64,7 @@ Actor.prototype.updateState = function(){
         if( animation.loop || !hasAnimationEnded  ) this.__lasAnimationKeyframe__ = animationFrame;
     }
     // callexecute the State controller
-    this.__states__[this.state].controller( this );
+    this.__states__[this.state].controller( this, ...args );
     return true;
 };
 

@@ -1,4 +1,7 @@
-import {Engine} from './engine.js'
+import {Engine} from '../jstick.js';
+
+
+
 
 
 const SPRITES_CACHE = new WeakMap();

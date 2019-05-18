@@ -1,27 +1,11 @@
-/**
- 
- load spritesheet (image)
-
- extract sprites (preproces rotate, flip, brighness ...)
- 
- define animations with sprites (loop , length, frames...)
-
- create states
- - assign a state name
- - link it to an animation
- - assign a state update handler
-
- create actors 
- - 
- 
+import {Engine} from '../jstick/jstick.js';
+import {Sprite}    from '../jstick/components/Sprite.js';
+import {Animation} from '../jstick/components/Animation.js';
+import {State}     from '../jstick/components/State.js';
+import {Actor}     from '../jstick/components/Actor.js';
+import {PixelMap}  from '../jstick/components/PixelMap.js';
 
 
- */
-import {Engine} from '../js/engine.js';
-import {Sprite} from '../js/Sprite.js';
-import {Animation} from '../js/Animation.js';
-import {State} from '../js/State.js';
-import {Actor} from '../js/Actor.js';
 import {myStates} from './my-states.js';
 
 
@@ -53,35 +37,35 @@ window.Engine = Engine;
     let interval = setInterval( ()=>{
         Actors.push(
             new Actor({
-                name   : 'Actor-' + Actors.length,
                 states : [walkState, fallState],
                 state  : 'walk',
                 x      : 500,
                 y      : 80,
                 attributes : {
-                    direction : 1,
-                    get groundX(){ return Math.floor( this.__parent__.x + 5 - (5/2) ) },
-                    get groundY(){ return Math.floor( this.__parent__.y + 9 - 1 ) }
+                    direction : 1
                 }
             }) 
         );
-        if( Actors.length > 0 ) clearInterval( interval );
+        if( Actors.length > 10 ) clearInterval( interval );
     }, 1000);
 
 
+    let pixelMap = await new PixelMap('./maps/map2.png');
 
 
-    let Map = await Engine.Map.load('./maps/map2.png');
-
+    /** LOOP : UPDATE */
     Engine.Loop.update = function(){
-        // iterate lemminjs and update
-        for(let i = 0; i < Actors.length; i++) Actors[i].updateState();
+        // iterate all actors and update their States
+        for(let i = 0; i < Actors.length; i++){ 
+            Actors[i].updateState( pixelMap );
+        }
     }
     
+    /* LOOP : DRAW */
     Engine.Loop.draw = function(){
         document.getElementById('actorsCounts').innerHTML = Actors.length;
         Engine.Viewport.clear();
-        Engine.Map.draw();
+        pixelMap.draw( );
 
         // RENDER LAYER :
         for(let i = 0; i < Actors.length; i++) Actors[i].draw();

@@ -1,4 +1,4 @@
-import {Engine} from './engine.js';
+import {Engine} from '../jstick.js';
 
 
 Engine.Image = {
@@ -42,8 +42,21 @@ Engine.Image = {
         return flipped;
     },
 
+    imageBitmapToImageData( imageBitmap ){
+        transferContext.canvas.width = imageBitmap.width;
+        transferContext.canvas.height = imageBitmap.height;
+        transferContext.drawImage( imageBitmap, 0, 0);
+        return transferContext.getImageData(0, 0, imageBitmap.width , imageBitmap.height);
+    },
+
+    imageDataToImageBitmap( imageData){
+
+    }
 
     
  
 }
+
+let transferContext  = new OffscreenCanvas(1,1).getContext('2d');
+
 

@@ -1,4 +1,7 @@
-import {Engine} from './engine.js';
+import {Engine} from '../jstick.js';
+
+   
+
 
 
 // initiate variables : canvas ref, offsets, scale...
@@ -122,9 +125,11 @@ Engine.Viewport = {
         Engine.Viewport.Cursor.x = x;
         Engine.Viewport.Cursor.y = y;
 
+        /*
         let mapCoords = Engine.Viewport.getMapCoordinates(x,y);
         Engine.Map.Cursor.x = mapCoords[0];
         Engine.Map.Cursor.y = mapCoords[1];
+        */
     },
 
     /**
@@ -208,6 +213,7 @@ Engine.Viewport = {
 
     }
 }
+
 
 
 Engine.Viewport.Layers.map.imageSmoothingEnabled     = false;
