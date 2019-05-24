@@ -24,8 +24,6 @@ const JStick  = {
         document.getElementById('FPS').innerHTML = JStick.FPS.value;
         document.getElementById("scaleInfo").innerHTML = JStick.Viewport.scale.toFixed(2);
         document.getElementById("scrollInfo").innerHTML = Math.floor(JStick.Viewport.Scroll.x) +' | '+Math.floor(JStick.Viewport.Scroll.y);
-        let [ x, y ] = JStick.Viewport.getMapCoordinates( JStick.Viewport.Cursor.x,JStick.Viewport.Cursor.x); 
-        document.getElementById('mouseCoords').innerHTML =  x+ ' | ' + y;
 
         //let b = Map.getBufferIndex(lem.x+lem.w-3,lem.y+lem.h)
         //document.getElementById('mapData').innerHTML= Map.buffer[b+3];
@@ -40,8 +38,9 @@ const JStick  = {
     tick(){
         JStick.Viewport.updateZoom();
         JStick.Viewport.updateScroll();
-        JStick.Loop.update( JStick.Input.getStatus() );
-        JStick.Loop.draw();
+        let input = JStick.Input.getStatus();
+        JStick.Loop.update( input );
+        JStick.Loop.draw( input );
         if( JStick.showInfo ) JStick.updateInfo();
         // reset some possible events like mousewheel
         JStick.Input.__update__();

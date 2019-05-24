@@ -44,9 +44,7 @@ let Actors
     JStick.Input.setButtonMapping( 'ARROWLEFT'      , 'arrow-left' );
     JStick.Input.setButtonMapping( 'ARROWRIGHT'     , 'arrow-right' );
 
-
-
-    JStick.Viewport.deviceCursor(false);
+    JStick.Viewport.hideDeviceCursor(true);
 
     // Load the spritesheet
     let spriteSheet  = await JStick.Image.load( './spritesheet/lemmings.png' );
@@ -88,6 +86,7 @@ let Actors
     /** LOOP : UPDATE */
     JStick.Loop.update = function( input ){
 
+        document.getElementById('inputMouseCoords').innerHTML = input['MOUSEX'] + '-' + input['MOUSEY'];
         document.getElementById('inputMouseLeft').innerHTML = input['mouse-left'];
         document.getElementById('inputMouseRight').innerHTML = input['mouse-right'];
         document.getElementById('inputMouseWheelUp').innerHTML = input['mouse-wheel-up'];
@@ -106,7 +105,7 @@ let Actors
     }
     
     /* LOOP : DRAW */
-    JStick.Loop.draw = function(){
+    JStick.Loop.draw = function( input ){
         document.getElementById('actorsCounts').innerHTML = Actors.length;
         JStick.Viewport.clear();
         pixelMap.draw( );
@@ -114,7 +113,7 @@ let Actors
         // RENDER LAYER :
         for(let i = 0; i < Actors.length; i++) Actors[i].draw();
         // RENDER STAGE :
-        JStick.Viewport.drawCursor();
+        JStick.Viewport.drawCursor( input.MOUSEX, input.MOUSEY );
 
         return;
     }

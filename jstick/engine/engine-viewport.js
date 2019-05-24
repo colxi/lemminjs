@@ -1,9 +1,6 @@
 import {JStick} from '../jstick.js';
 
    
-
-
-
 // initiate variables : canvas ref, offsets, scale...
 
 let TARGET_ZOOM = false ; /* {
@@ -20,7 +17,6 @@ let TARGET_SCROLL = false; /*{
 */
 
 
-
 JStick.Viewport = {
     width : document.getElementById('map').width,
     height : document.getElementById('map').height,
@@ -35,22 +31,11 @@ JStick.Viewport = {
         // window UI (game information, lifes, time etc...)
     },
 
-    // Container for Viewport cursor position. Only read mode recomended. To set new coordinates 
-    // use Viewport.setCursor ( it will generate automatically scaled Map coordinates too)
-    Cursor : {
-        x : 0,
-        y : 0
-    },
-
     Scroll : {
         x : 0,
         y : 0
     },
 
-    showInfo : true,
-
-    // todo : should be in INPUT module
-    allowInput : true,
     // allow/disallow scales lower than 1 (scale reduction)
     allowNegativeScale : false,
     // current scale
@@ -61,21 +46,15 @@ JStick.Viewport = {
     scaleStep : 0.05,
 
     // native cursor
-    deviceCursor( value ){
+    hideDeviceCursor( value ){
         if (typeof value !== "boolean"){
             throw new Error('Viewport.deviceCursor() : Argument 1 must be a Boolean');
         }
 
-        if( value ) JStick.Viewport.Layers.container.removeAttribute('hide-device-cursor');
-        else JStick.Viewport.Layers.container.setAttribute('hide-device-cursor',true);
+        if( value ) JStick.Viewport.Layers.container.setAttribute('hide-device-cursor',true);
+        else JStick.Viewport.Layers.container.removeAttribute('hide-device-cursor');
         return true;
     },
-    // flag to enable or disable automatic viewport cursor changes tracking 
-    captureCursor : true,
-
-    cursor : undefined, // should contain a sprite
-
-   
 
     /**
      * Viewport.clear() : Clears the Viewport
@@ -100,50 +79,39 @@ JStick.Viewport = {
         return true;
     },
 
-    loadCursor(){ /* loads a cursor, and stores it in a CURSORS collection (object with sprites) */},
-
-    drawCursor : function(){     
+    drawCursor : function(x,y, cursorSprite){     
         // render cursor
         JStick.Viewport.Layers.sprites.fillStyle = "#FFFFF";
 
         JStick.Viewport.Layers.sprites.fillRect(
-            ( JStick.Viewport.Cursor.x / JStick.Viewport.scale ) - 5, 
-            JStick.Viewport.Cursor.y  / JStick.Viewport.scale,
+            ( x / JStick.Viewport.scale ) - 5, 
+            y  / JStick.Viewport.scale,
             11,
             1
         );
         JStick.Viewport.Layers.sprites.fillRect(
-            JStick.Viewport.Cursor.x / JStick.Viewport.scale, 
-            ( JStick.Viewport.Cursor.y / JStick.Viewport.scale ) - 5  ,
+            x / JStick.Viewport.scale, 
+            ( y / JStick.Viewport.scale ) - 5  ,
             1,
             11
         );
         return true;
     },
 
-    setCursor(x,y){
-        JStick.Viewport.Cursor.x = x;
-        JStick.Viewport.Cursor.y = y;
-
-        /*
-        let mapCoords = JStick.Viewport.getMapCoordinates(x,y);
-        JStick.Map.Cursor.x = mapCoords[0];
-        JStick.Map.Cursor.y = mapCoords[1];
-        */
-    },
 
     /**
      * 
      * Viewport.getMapCoordinates() : Transform the provided viewport coordinates to map 
      *                                coordinates, considering map scale and map scroll.
      */
-    //getMapCursorCoordinates( x, y){
+    /*
     getMapCoordinates( x , y ){
         return [
             Math.floor( ( JStick.Viewport.Cursor.x/JStick.Viewport.scale ) + JStick.Viewport.Scroll.x ) ,
             Math.floor( ( JStick.Viewport.Cursor.y/JStick.Viewport.scale ) + JStick.Viewport.Scroll.y )
         ];
     },
+    */
 
     updateZoom(){
         if( !TARGET_ZOOM ) return true;
@@ -200,7 +168,6 @@ JStick.Viewport = {
             TARGET_SCROLL = false;
             return;
         }
-
 
         let scrollFactor = 2;
 
@@ -259,10 +226,4 @@ JStick.Viewport = {
 
 JStick.Viewport.Layers.map.imageSmoothingEnabled     = false;
 JStick.Viewport.Layers.sprites.imageSmoothingEnabled = false;
-
-JStick.Viewport.Layers.container.addEventListener( 'mousemove', e=>{
-    if( JStick.Viewport.captureCursor ){
-        JStick.Viewport.setCursor( e.layerX, e.layerY );
-    }
-});
 

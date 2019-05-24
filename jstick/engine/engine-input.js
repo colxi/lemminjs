@@ -2,6 +2,8 @@ import {JStick} from '../jstick.js';
 import {default as MouseInterface} from './input-interfaces/mouse.js';
 import {default as KeyboardInterface} from './input-interfaces/keyboard.js';
 
+// TODO : move the private methods to a new module like 'engine-input-state.js'
+//        to keep them out of the public API
 
 // Container for loaded/imported interfaces
 let INTERFACES = {
@@ -33,11 +35,36 @@ let VIRTUAL_BUTTONS_OLD_STATE = {};
 JStick.Input = {
     /**
      * __interfaceSignal__() : Internal method to recieve signals from the interface modules
+     *                         and change the input state
      */
-    __interfaceSignal__( interfaceSignal, value ){
-        let virtualButtonId = INTERFACES_BUTTONS_MAPPINGS[ interfaceSignal ];
-        if( typeof virtualButtonId === 'undefined' ) return false;
-        else VIRTUAL_BUTTONS_STATE[ virtualButtonId ] = value;
+    __interfaceSignal__( interfaceSignal, value, attributeFlag=false ){
+        // if is an attribute , set the value
+        if(attributeFlag) VIRTUAL_BUTTONS_STATE[ interfaceSignal ] = value;
+        // if is not an attribute, assign the value only if the signal is mapped
+        // to a virtual button
+        else{
+            let virtualButtonId = INTERFACES_BUTTONS_MAPPINGS[ interfaceSignal ];
+            if( typeof virtualButtonId === 'undefined' ) return false;
+            VIRTUAL_BUTTONS_STATE[ virtualButtonId ] = value;
+        }
+        return true;
+    },
+
+    /**
+     * __registerInterfaceAttribute__() : Registers a new interface attribute in the
+     *                                    Input state object
+     */
+    __registerInterfaceAttribute__( interfaceAttr, initialValue ){
+        VIRTUAL_BUTTONS_STATE[ interfaceAttr ] = initialValue;
+        return true;
+    },
+
+    /**
+     * __unregisterInterfaceAttribute__() : Unregisters an interface attribute from the
+     *                                      Input state object
+     */
+    __unregisterInterfaceAttribute__( interfaceAttr ){
+        delete VIRTUAL_BUTTONS_STATE[ interfaceAttr ];
         return true;
     },
 
@@ -245,7 +272,8 @@ JStick.Input = {
     },
 
     /**
-     * 
+     * getButtonsMapping() : Returns an object (copy) containing the 
+     *                       signal-vbuttons mapppings
      */
     getButtonsMapping(){
         //
