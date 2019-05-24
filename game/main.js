@@ -39,11 +39,12 @@ let Actors
      // map the keyboard buttons to game  virtual buttons
     JStick.Input.setButtonMapping( 'D'              , 'draw-but' );
     JStick.Input.setButtonMapping( 'E'              , 'erase-but' );
+    JStick.Input.setButtonMapping( 'ARROWUP'        , 'arrow-up' );
+    JStick.Input.setButtonMapping( 'ARROWDOWN'      , 'arrow-down' );
+    JStick.Input.setButtonMapping( 'ARROWLEFT'      , 'arrow-left' );
+    JStick.Input.setButtonMapping( 'ARROWRIGHT'     , 'arrow-right' );
 
 
-  /*
-    JStick.Input.enableInterface('keyboard');
-   */
 
     JStick.Viewport.deviceCursor(false);
 
@@ -86,7 +87,17 @@ let Actors
 
     /** LOOP : UPDATE */
     JStick.Loop.update = function( input ){
-        //console.log( input )
+
+        document.getElementById('inputMouseLeft').innerHTML = input['mouse-left'];
+        document.getElementById('inputMouseRight').innerHTML = input['mouse-right'];
+        document.getElementById('inputMouseWheelUp').innerHTML = input['mouse-wheel-up'];
+        document.getElementById('inputMouseWheelDown').innerHTML = input['mouse-wheel-down'];
+        document.getElementById('inputKeybD').innerHTML = input['draw-but'];
+        document.getElementById('inputKeybE').innerHTML = input['erase-but'];
+        document.getElementById('inputKeybArrowUp').innerHTML = input['arrow-up'];
+        document.getElementById('inputKeybArrowDown').innerHTML = input['arrow-down'];
+        document.getElementById('inputKeybArrowLeft').innerHTML = input['arrow-left'];
+        document.getElementById('inputKeybArrowRight').innerHTML = input['arrow-right'];
         if(input.mouseWheelUp) console.log( input )
         // iterate all actors and update their States
         for(let i = 0; i < Actors.length; i++){ 

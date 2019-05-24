@@ -12,13 +12,13 @@ export default {
         //'|', '@', '#', '~', '€', '¬'
     ],
     enable(){
-        JStick.Viewport.Layers.container.addEventListener( 'keyup', keyUp, false);
-        JStick.Viewport.Layers.container.addEventListener( 'keydown', keyDown, false );
+        window.addEventListener( 'keyup', keyUp, false);
+        window.addEventListener( 'keydown', keyDown, false );
         return true;
     },
     disable(){
-        JStick.Viewport.Layers.container.removeEventListener( 'keyup', keyUp, false);
-        JStick.Viewport.Layers.container.removeEventListener( 'keydown', keyDown ,false);
+        window.removeEventListener( 'keyup', keyUp, false);
+        window.removeEventListener( 'keydown', keyDown ,false);
         return true;
     }
 };
@@ -32,6 +32,7 @@ function keyDown(e){
 
 function keyUp(e){
     e.preventDefault();
+    let key = e.key.toUpperCase();
     JStick.Input.__interfaceSignal__( key , false ); 
     return;
 }

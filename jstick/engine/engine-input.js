@@ -245,6 +245,14 @@ JStick.Input = {
     },
 
     /**
+     * 
+     */
+    getButtonsMapping(){
+        //
+        return {...INTERFACES_BUTTONS_MAPPINGS};
+    },
+
+    /**
      * hasButtonStateChanged() : Returns a boolean indicating if the requested vButton
      *                           state has changed since last frame. Is usefull to check
      *                           input events that happened in the current frame.
