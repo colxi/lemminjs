@@ -15,8 +15,37 @@ let pixelMap;
 let Actors
 
 (async function(){
-    JStick.Viewport.deviceCursor(false);
 
+    JStick.Input.enableInterface('mouse');
+    JStick.Input.enableInterface('keyboard');
+
+    // register virtual game buttons
+    JStick.Input.registerButton( 'draw-but' );
+    JStick.Input.registerButton( 'erase-but' );
+    JStick.Input.registerButton( 'arrow-up' );
+    JStick.Input.registerButton( 'arrow-down' );
+    JStick.Input.registerButton( 'arrow-left' );
+    JStick.Input.registerButton( 'arrow-right' );
+    JStick.Input.registerButton( 'mouse-left' );
+    JStick.Input.registerButton( 'mouse-right' );
+    JStick.Input.registerButton( 'mouse-wheel-up' );
+    JStick.Input.registerButton( 'mouse-wheel-down' );
+    
+    // map the mouse actions to game  virtual buttons
+    JStick.Input.setButtonMapping( 'MOUSELEFT'      , 'mouse-left' );
+    JStick.Input.setButtonMapping( 'MOUSERIGHT'     , 'mouse-right' );
+    JStick.Input.setButtonMapping( 'MOUSEWHEELUP'   , 'mouse-wheel-up' );
+    JStick.Input.setButtonMapping( 'MOUSEWHEELDOWN' , 'mouse-wheel-down' );
+     // map the keyboard buttons to game  virtual buttons
+    JStick.Input.setButtonMapping( 'D'              , 'draw-but' );
+    JStick.Input.setButtonMapping( 'E'              , 'erase-but' );
+
+
+  /*
+    JStick.Input.enableInterface('keyboard');
+   */
+
+    JStick.Viewport.deviceCursor(false);
 
     // Load the spritesheet
     let spriteSheet  = await JStick.Image.load( './spritesheet/lemmings.png' );
@@ -56,7 +85,9 @@ let Actors
 
 
     /** LOOP : UPDATE */
-    JStick.Loop.update = function(){
+    JStick.Loop.update = function( input ){
+        //console.log( input )
+        if(input.mouseWheelUp) console.log( input )
         // iterate all actors and update their States
         for(let i = 0; i < Actors.length; i++){ 
             Actors[i].updateState( pixelMap );
@@ -88,6 +119,8 @@ let clicked = false;
 container.onmousedown = (e)=>{ clicked = true; }
 container.onmouseup   = (e)=>{ clicked = false; }
 
+
+/*
 
 container.onclick= e=>{
     console.log(e)
@@ -134,5 +167,30 @@ container.onmousemove= e=>{
     }
 }
 
+*/
+
+
+/*
+
+
+// Handle mousenwheel zoom
+JStick.Viewport.Layers.container.onwheel = function(e){
+    e.preventDefault();
+    let direction = e.deltaY > 0 ? 1 : -1;
+    let newScale= JStick.Viewport.scale + ( JStick.Viewport.scaleFactor * direction );
+    JStick.Viewport.zoomTo(newScale, e.offsetX , e.offsetY);
+}
+  
+// handlencursor keys to move scroll
+window.onkeydown = function(event){
+    event.preventDefault();
+    if(event.keyCode == 37)      JStick.Viewport.scrollTo( JStick.Viewport.Scroll.x -10,JStick.Viewport.Scroll.y) ;
+    else if(event.keyCode == 39) JStick.Viewport.scrollTo( JStick.Viewport.Scroll.x +10,JStick.Viewport.Scroll.y) ;
+    else if(event.keyCode == 38) JStick.Viewport.scrollTo( JStick.Viewport.Scroll.x ,JStick.Viewport.Scroll.y - 10) ;
+    else if(event.keyCode == 40) JStick.Viewport.scrollTo( JStick.Viewport.Scroll.x ,JStick.Viewport.Scroll.y + 10) ;
+};
+
+*/
+  
 
 

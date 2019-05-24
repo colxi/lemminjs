@@ -12,6 +12,11 @@ const JStick  = {
     rootpath : '',
     status : 1,
     showInfo : true,
+    debug : false,
+
+    log(...args){
+        if(JStick.debug) console.log(...args);
+    },
 
     updateInfo(){
         // info panel
@@ -35,15 +40,17 @@ const JStick  = {
     tick(){
         JStick.Viewport.updateZoom();
         JStick.Viewport.updateScroll();
-        JStick.Loop.update();
+        JStick.Loop.update( JStick.Input.getStatus() );
         JStick.Loop.draw();
         if( JStick.showInfo ) JStick.updateInfo();
+        // reset some possible events like mousewheel
+        JStick.Input.__update__();
     },
 
 
     toggle(){
-        JStickstatus = !JStickstatus;
-        JStickframe();
+        JStick.status = !JStick.status;
+        JStick.frame();
     },
     
     Loop : {

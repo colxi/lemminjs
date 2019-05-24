@@ -137,7 +137,8 @@ JStick.Viewport = {
      * Viewport.getMapCoordinates() : Transform the provided viewport coordinates to map 
      *                                coordinates, considering map scale and map scroll.
      */
-    getMapCoordinates( x, y){
+    //getMapCursorCoordinates( x, y){
+    getMapCoordinates( x , y ){
         return [
             Math.floor( ( JStick.Viewport.Cursor.x/JStick.Viewport.scale ) + JStick.Viewport.Scroll.x ) ,
             Math.floor( ( JStick.Viewport.Cursor.y/JStick.Viewport.scale ) + JStick.Viewport.Scroll.y )
@@ -172,10 +173,14 @@ JStick.Viewport = {
         // calculate the new scroll values
         JStick.Viewport.Scroll.x += ( TARGET_ZOOM.x / previousScale ) - ( TARGET_ZOOM.x / JStick.Viewport.scale);
         JStick.Viewport.Scroll.y += ( TARGET_ZOOM.y / previousScale ) - ( TARGET_ZOOM.y / JStick.Viewport.scale);
-        
+       
+        let x =  TARGET_ZOOM.x;
+        let y =  TARGET_ZOOM.y;
+        JStick.Viewport.scrollTo( x, y )
+
         // experimental : limit scroll to prevent negative scrolls
-        if( JStick.Viewport.Scroll.x < 0) JStick.Viewport.Scroll.x = 0;
-        if( JStick.Viewport.Scroll.y < 0) JStick.Viewport.Scroll.y = 0;
+        //if( JStick.Viewport.Scroll.x < 0) JStick.Viewport.Scroll.x = 0;
+        //if( JStick.Viewport.Scroll.y < 0) JStick.Viewport.Scroll.y = 0;
     
         // apply new scale in a non acumulative way
         JStick.Viewport.Layers.map.setTransform(1, 0, 0, 1, 0, 0);
@@ -190,7 +195,40 @@ JStick.Viewport = {
 
     updateScroll(){
         // perform  SCALE update if is scheduled
-        //if( !TARGET_SCROLL ) _applyScroll();
+        if( !TARGET_SCROLL ) return;
+        if( TARGET_SCROLL.x === false && TARGET_SCROLL.y === false ){
+            TARGET_SCROLL = false;
+            return;
+        }
+
+
+        let scrollFactor = 2;
+
+        if( TARGET_SCROLL.x !== false ){
+            if( JStick.Viewport.Scroll.x < TARGET_SCROLL.x){
+                let target = JStick.Viewport.Scroll.x + scrollFactor;
+                if( target < TARGET_SCROLL ) JStick.Viewport.Scroll.x = target;
+                else TARGET_SCROLL.x = false;
+            }else{
+                let target = JStick.Viewport.Scroll.x - scrollFactor;
+                if( target > TARGET_SCROLL ) JStick.Viewport.Scroll.x = target;
+                else TARGET_SCROLL.x = false;
+            }
+        }
+
+        if( TARGET_SCROLL.y !== false ){
+            if( JStick.Viewport.Scroll.y < TARGET_SCROLL.y){
+                let target = JStick.Viewport.Scroll.y + scrollFactor;
+                if( target < TARGET_SCROLL ) JStick.Viewport.Scroll.y = target;
+                else TARGET_SCROLL.y = false;
+            }else{
+                let target = JStick.Viewport.Scroll.y - scrollFactor;
+                if( target > TARGET_SCROLL ) JStick.Viewport.Scroll.y = target;
+                else TARGET_SCROLL.y = false;
+            }
+        }
+
+
         return true;
     },
 
@@ -210,7 +248,10 @@ JStick.Viewport = {
     },
 
     scrollTo(x,y){
-
+        TARGET_SCROLL= {
+            x : x,
+            y : y,
+        }
     }
 }
 
